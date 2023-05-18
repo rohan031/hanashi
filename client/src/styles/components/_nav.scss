@@ -1,0 +1,25 @@
+.nav {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	width: min(90%, 85rem);
+	margin-inline: auto;
+	margin-block: 1em;
+
+	h1 {
+		background-image: linear-gradient(
+			120deg,
+			var(--mantine-color-pink-9),
+			var(--mantine-color-pink-8),
+			var(--mantine-color-pink-6),
+			var(--mantine-color-pink-4),
+			var(--mantine-color-pink-2)
+		);
+		color: transparent;
+		user-select: none;
+		background-clip: text;
+
+		font-size: clamp(2.2rem, 10vw, 3rem);
+	}
+}

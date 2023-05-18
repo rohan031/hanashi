@@ -1,5 +1,13 @@
+import "./styles/main.scss";
+import Theme from "./Components/Mantine/Theme";
+import RoutesList from "./Components/Navigation/Routes";
+
 function App() {
-	return <div>App!</div>;
+	return (
+		<Theme>
+			<RoutesList />
+		</Theme>
+	);
 }
 
 export default App;
