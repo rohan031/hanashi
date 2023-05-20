@@ -1,2 +1,23 @@
-@use "./abstracts";
+@use "./abstracts" as ab;
 @use "./components";
+
+body {
+	background-color: ab.$background-primary;
+	color: ab.$text-primary;
+	font-family: "Manrope", sans-serif;
+}
+
+.hanashi {
+	font-family: "Pacifico", cursive;
+	background-image: linear-gradient(
+		120deg,
+		#552586,
+		#6a359c,
+		#804fb3,
+		#9969c7,
+		#b589d6
+	);
+	background-clip: text;
+	color: transparent;
+	user-select: none;
+}
