@@ -7,6 +7,40 @@
 	left: 0;
 	right: 0;
 
-	background-color: ab.$background-secondary;
+	// background-color: ab.$background-secondary;
 	padding-block: 1.4em;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1em;
+
+	.rs-dropdown {
+		ul {
+			gap: 1em;
+			padding-inline: 0.5em;
+			background-color: ab.$background-secondary;
+		}
+		button {
+			width: 100%;
+			margin-block: 0.5em;
+		}
+	}
+
+	button {
+		background-color: #ff0059a6;
+		display: flex;
+		align-items: center;
+		padding-inline: 1em;
+		padding-block: 0.5em;
+		border-radius: 0.6em;
+
+		gap: 1em;
+		font-weight: 600;
+
+		&:hover,
+		&:focus {
+			background-color: lighten(#ff0059a6, 15);
+		}
+	}
 }

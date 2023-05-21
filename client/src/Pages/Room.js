@@ -3,17 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import Peer from "simple-peer";
 import Video from "../Components/Room/Video";
-import {
-	Camera,
-	CameraOff,
-	Microphone,
-	MicrophoneOff,
-	PhoneOff,
-	DotsVertical as Dots,
-	Message2 as Message,
-	Copy,
-} from "tabler-icons-react";
-
+import Menu from "../Components/Room/Menu";
 function Room() {
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -27,7 +17,6 @@ function Room() {
 	const myVideo = useRef(null);
 	const socketRef = useRef(null);
 	const peerRef = useRef(new Set());
-	const selectRef = useRef();
 	const initialStream = useRef();
 
 	const [myStream, setMyStream] = useState({});
@@ -206,9 +195,9 @@ function Room() {
 		}
 	};
 
-	const handleCameraChange = (e) => {
+	const handleCameraChange = (deviceId) => {
 		try {
-			let deviceId = selectRef.current.value;
+			// let deviceId = selectRef.current.value;
 
 			if (myStream.active) {
 				const currentVideoTrack = myStream.getVideoTracks()[0];
@@ -243,15 +232,10 @@ function Room() {
 		}
 	};
 
-	const cameras = (
-		<select onChange={handleCameraChange} ref={selectRef}>
-			{videoDevices.map((device) => (
-				<option key={device.deviceId} value={device.deviceId}>
-					{device.label}
-				</option>
-			))}
-		</select>
-	);
+	const cameras = videoDevices.map((device) => ({
+		label: device.label,
+		value: device.deviceId,
+	}));
 
 	const toggleCamera = () => {
 		try {
@@ -291,24 +275,14 @@ function Room() {
 
 				{peer && remoteUsers}
 			</div>
-
-			<div className="menu">
-				{cameras}
-				<button onClick={() => toggleCamera()}>
-					{toggleStream.camera ? (
-						<Camera strokeWidth={2} />
-					) : (
-						<CameraOff strokeWidth={2} />
-					)}
-				</button>
-				<button onClick={() => toggleMic()}>
-					{toggleStream.mic ? (
-						<Microphone strokeWidth={2} />
-					) : (
-						<MicrophoneOff strokeWidth={2} />
-					)}
-				</button>
-			</div>
+			<Menu
+				toggleStream={toggleStream}
+				toggleCamera={toggleCamera}
+				toggleMic={toggleMic}
+				cameras={cameras}
+				handleCameraChange={handleCameraChange}
+				roomId={userInfo.roomId}
+			/>
 		</>
 	);
 }
