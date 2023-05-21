@@ -12,8 +12,6 @@ import {
 	DotsVertical as Dots,
 	Message2 as Message,
 	Copy,
-	ScreenShare,
-	ScreenShareOff,
 } from "tabler-icons-react";
 
 function Room() {
@@ -38,7 +36,6 @@ function Room() {
 	const [toggleStream, setToggleStream] = useState({
 		mic: true,
 		camera: true,
-		screenShare: false,
 	});
 
 	useEffect(() => {
@@ -209,50 +206,6 @@ function Room() {
 		}
 	};
 
-	const handleScreenShare = () => {
-		try {
-			if (!toggleStream.screenShare && myStream.active) {
-				const currentVideoTrack = myStream.getVideoTracks()[0];
-				currentVideoTrack.stop();
-
-				navigator.mediaDevices
-					.getDisplayMedia({
-						audio: true,
-						video: true,
-					})
-					.then((stream) => {
-						myVideo.current.srcObject = stream;
-						setMyStream(stream);
-
-						console.log(stream.getTracks());
-
-						const newVideoTrack = stream.getVideoTracks()[0];
-
-						peerRef.current.forEach((peer) => {
-							peer.peer.replaceTrack(
-								currentVideoTrack,
-								newVideoTrack,
-								initialStream.current
-							);
-						});
-
-						setToggleStream((prev) => ({
-							...prev,
-							screenShare: true,
-							camera: false,
-						}));
-					})
-					.catch((err) => {
-						console.log(err);
-
-						toggleCamera(true, currentVideoTrack);
-					});
-			}
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
 	const handleCameraChange = (e) => {
 		try {
 			let deviceId = selectRef.current.value;
@@ -272,7 +225,6 @@ function Room() {
 						setToggleStream((prev) => ({
 							...prev,
 							camera: true,
-							screenShare: false,
 						}));
 
 						const newVideoTrack = stream.getVideoTracks()[0];
@@ -301,45 +253,12 @@ function Room() {
 		</select>
 	);
 
-	const toggleCamera = (fromScreenShare = false, videoTrack) => {
+	const toggleCamera = () => {
 		try {
-			if (toggleStream.screenShare || fromScreenShare) {
-				let currentVideoTrack = myStream.getVideoTracks()[0];
+			const prevVal = myStream.getVideoTracks()[0].enabled;
+			myStream.getVideoTracks()[0].enabled = !prevVal;
 
-				if (fromScreenShare) currentVideoTrack = videoTrack;
-				else currentVideoTrack.stop();
-
-				navigator.mediaDevices
-					.getUserMedia({
-						video: { deviceId: { exact: selectRef.current.value } },
-						audio: toggleStream.mic,
-					})
-					.then((stream) => {
-						myVideo.current.srcObject = stream;
-						setMyStream(stream);
-						setToggleStream((prev) => ({
-							...prev,
-							camera: true,
-							screenShare: false,
-						}));
-
-						const newVideoTrack = stream.getVideoTracks()[0];
-
-						peerRef.current.forEach((peer) => {
-							peer.peer.replaceTrack(
-								currentVideoTrack,
-								newVideoTrack,
-								initialStream.current
-							);
-						});
-					});
-			} else {
-				const prevVal = myStream.getVideoTracks()[0].enabled;
-
-				myStream.getVideoTracks()[0].enabled = !prevVal;
-
-				setToggleStream((prev) => ({ ...prev, camera: !prevVal }));
-			}
+			setToggleStream((prev) => ({ ...prev, camera: !prevVal }));
 		} catch (err) {
 			console.log(err);
 		}
@@ -389,8 +308,6 @@ function Room() {
 						<MicrophoneOff strokeWidth={2} />
 					)}
 				</button>
-
-				<button onClick={handleScreenShare}> screenShare</button>
 			</div>
 		</>
 	);
