@@ -31,8 +31,6 @@ function Room() {
 	const peerRef = useRef(new Set());
 	const selectRef = useRef();
 	const initialStream = useRef();
-	const videoTrackRef = useRef();
-	const audioTrackRef = useRef();
 
 	const [myStream, setMyStream] = useState({});
 	const [peer, setPeer] = useState(new Set());
@@ -246,13 +244,8 @@ function Room() {
 					})
 					.catch((err) => {
 						console.log(err);
-						// setToggleStream((prev) => ({
-						// 	...prev,
-						// 	screenShare: false,
-						// 	camera: false,
-						// }));
 
-						toggleCamera(true);
+						toggleCamera(true, currentVideoTrack);
 					});
 			}
 		} catch (err) {
@@ -276,6 +269,11 @@ function Room() {
 					.then((stream) => {
 						myVideo.current.srcObject = stream;
 						setMyStream(stream);
+						setToggleStream((prev) => ({
+							...prev,
+							camera: true,
+							screenShare: false,
+						}));
 
 						const newVideoTrack = stream.getVideoTracks()[0];
 
@@ -303,11 +301,13 @@ function Room() {
 		</select>
 	);
 
-	const toggleCamera = () => {
+	const toggleCamera = (fromScreenShare = false, videoTrack) => {
 		try {
-			if (toggleStream.screenShare) {
-				const currentVideoTrack = myStream.getVideoTracks()[0];
-				currentVideoTrack.stop();
+			if (toggleStream.screenShare || fromScreenShare) {
+				let currentVideoTrack = myStream.getVideoTracks()[0];
+
+				if (fromScreenShare) currentVideoTrack = videoTrack;
+				else currentVideoTrack.stop();
 
 				navigator.mediaDevices
 					.getUserMedia({
@@ -327,7 +327,7 @@ function Room() {
 
 						peerRef.current.forEach((peer) => {
 							peer.peer.replaceTrack(
-								videoTrackRef.current,
+								currentVideoTrack,
 								newVideoTrack,
 								initialStream.current
 							);
@@ -340,8 +340,6 @@ function Room() {
 
 				setToggleStream((prev) => ({ ...prev, camera: !prevVal }));
 			}
-
-			console.log(myStream.getVideoTracks()[0]);
 		} catch (err) {
 			console.log(err);
 		}
@@ -349,6 +347,7 @@ function Room() {
 
 	const toggleMic = () => {
 		try {
+			console.log(myStream.getTracks());
 			const prevVal = myStream.getAudioTracks()[0].enabled;
 
 			myStream.getAudioTracks()[0].enabled = !prevVal;
@@ -390,6 +389,8 @@ function Room() {
 						<MicrophoneOff strokeWidth={2} />
 					)}
 				</button>
+
+				<button onClick={handleScreenShare}> screenShare</button>
 			</div>
 		</>
 	);
