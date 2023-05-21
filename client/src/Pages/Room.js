@@ -3,6 +3,18 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import Peer from "simple-peer";
 import Video from "../Components/Room/Video";
+import {
+	Camera,
+	CameraOff,
+	Microphone,
+	MicrophoneOff,
+	PhoneOff,
+	DotsVertical as Dots,
+	Message2 as Message,
+	Copy,
+	ScreenShare,
+	ScreenShareOff,
+} from "tabler-icons-react";
 
 function Room() {
 	const location = useLocation();
@@ -25,48 +37,65 @@ function Room() {
 	const [myStream, setMyStream] = useState({});
 	const [peer, setPeer] = useState(new Set());
 	const [videoDevices, setVideoDevices] = useState([]);
-	const [toggleDevices, setToggleDevices] = useState({
+	const [toggleStream, setToggleStream] = useState({
 		mic: true,
 		camera: true,
+		screenShare: false,
 	});
 
 	useEffect(() => {
 		if (!location.state) navigate("/");
+		else {
+			socketRef.current = io("/");
 
-		socketRef.current = io("/");
+			navigator.mediaDevices
+				.getUserMedia({
+					audio: true,
+					video: true,
+				})
+				.then((stream) => {
+					console.log("got my stream ", stream);
+					myVideo.current.srcObject = stream;
+					setMyStream(stream);
+					initialStream.current = stream;
 
-		navigator.mediaDevices
-			.getUserMedia({
-				audio: true,
-				video: true,
-			})
-			.then((stream) => {
-				console.log("got my stream ", stream);
-				myVideo.current.srcObject = stream;
-				setMyStream(stream);
-				initialStream.current = stream;
+					socketRef.current?.emit("user-joined", {
+						roomId: userInfo.roomId,
+						name: userInfo.name,
+					});
 
-				socketRef.current?.emit("user-joined", {
-					roomId: userInfo.roomId,
-					name: userInfo.name,
-				});
+					socketRef.current?.on("room-full", () => {
+						alert("Room is full!!");
+					});
 
-				socketRef.current?.on("room-full", () => {
-					alert("Room is full!!");
-				});
+					socketRef.current?.on("room-info", (users) => {
+						console.log("room-info");
 
-				socketRef.current?.on("room-info", (users) => {
-					console.log("room-info");
-					// let tempPeers = [];
+						users.forEach((user) => {
+							const { id, name } = user;
 
-					users.forEach((user) => {
-						const { id, name } = user;
+							const peer = createPeer(
+								id,
+								socketRef.current?.id,
+								stream
+							);
 
-						const peer = createPeer(
-							id,
-							socketRef.current?.id,
-							stream
-						);
+							let peerInfo = {
+								peerId: id,
+								peer,
+								name,
+							};
+
+							peerRef.current.add(peerInfo);
+						});
+
+						setPeer(peerRef.current);
+					});
+
+					socketRef.current.on("new-user-connected", (payload) => {
+						console.log("new-user-connected");
+						const { id, name } = payload.from;
+						const peer = addPeer(id, payload.data, stream);
 
 						let peerInfo = {
 							peerId: id,
@@ -74,75 +103,47 @@ function Room() {
 							name,
 						};
 
-						// tempPeers.push(peerInfo);
 						peerRef.current.add(peerInfo);
+						setPeer((prev) => new Set(peerRef.current));
 					});
 
-					setPeer(peerRef.current);
-				});
-
-				socketRef.current.on("new-user-connected", (payload) => {
-					console.log("new-user-connected");
-					const { id, name } = payload.from;
-					const peer = addPeer(id, payload.data, stream);
-
-					let peerInfo = {
-						peerId: id,
-						peer,
-						name,
-					};
-
-					peerRef.current.add(peerInfo);
-					setPeer((prev) => new Set(peerRef.current));
-				});
-
-				socketRef.current.on("existing-user-res", (payload) => {
-					console.log("existing-user-res");
-					const peerInfo = Array.from(peerRef.current).find(
-						(user) => user.peerId === payload.from
-					);
-					// const peerInfo = peerRef.current.find(
-					// 	(user) => user.peerId === payload.from
-					// );
-
-					peerInfo.peer.signal(payload.data);
-				});
-
-				socketRef.current.on("user-disconnected", (userId) => {
-					console.log("user-disconnected");
-					try {
-						// const peerInfo = peerRef.current.find(
-						// 	(user) => user.peerId === userId
-						// );
-
+					socketRef.current.on("existing-user-res", (payload) => {
+						console.log("existing-user-res");
 						const peerInfo = Array.from(peerRef.current).find(
-							(user) => user.peerId === userId
+							(user) => user.peerId === payload.from
 						);
 
-						// const updatedPeer = peerRef.current.filter(
-						// 	(user) => user.peerId !== userId
-						// );
-						peerRef.current.forEach((user) => {
-							if (user.peerId === userId)
-								peerRef.current.delete(user);
-						});
+						peerInfo.peer.signal(payload.data);
+					});
 
-						peerInfo?.peer?.destroy();
+					socketRef.current.on("user-disconnected", (userId) => {
+						console.log("user-disconnected");
+						try {
+							const peerInfo = Array.from(peerRef.current).find(
+								(user) => user.peerId === userId
+							);
 
-						// peerRef.current = updatedPeer;
-						setPeer((prev) => new Set(peerRef.current));
-					} catch (err) {
-						console.log(err);
-					}
+							peerRef.current.forEach((user) => {
+								if (user.peerId === userId)
+									peerRef.current.delete(user);
+							});
+
+							peerInfo?.peer?.destroy();
+
+							setPeer((prev) => new Set(peerRef.current));
+						} catch (err) {
+							console.log(err);
+						}
+					});
+
+					getCameras();
+				})
+				.catch((err) => {
+					console.log("error getting media stream ", err);
 				});
 
-				getCameras();
-			})
-			.catch((err) => {
-				console.log("error getting media stream ", err);
-			});
-
-		navigator.mediaDevices.addEventListener("devicechange", getCameras);
+			navigator.mediaDevices.addEventListener("devicechange", getCameras);
+		}
 	}, []);
 
 	const getCameras = () => {
@@ -212,7 +213,7 @@ function Room() {
 
 	const handleScreenShare = () => {
 		try {
-			if (myStream.active) {
+			if (!toggleStream.screenShare && myStream.active) {
 				const currentVideoTrack = myStream.getVideoTracks()[0];
 				currentVideoTrack.stop();
 
@@ -225,6 +226,8 @@ function Room() {
 						myVideo.current.srcObject = stream;
 						setMyStream(stream);
 
+						console.log(stream.getTracks());
+
 						const newVideoTrack = stream.getVideoTracks()[0];
 
 						peerRef.current.forEach((peer) => {
@@ -234,6 +237,22 @@ function Room() {
 								initialStream.current
 							);
 						});
+
+						setToggleStream((prev) => ({
+							...prev,
+							screenShare: true,
+							camera: false,
+						}));
+					})
+					.catch((err) => {
+						console.log(err);
+						// setToggleStream((prev) => ({
+						// 	...prev,
+						// 	screenShare: false,
+						// 	camera: false,
+						// }));
+
+						toggleCamera(true);
 					});
 			}
 		} catch (err) {
@@ -241,7 +260,7 @@ function Room() {
 		}
 	};
 
-	const handleCameraChange = () => {
+	const handleCameraChange = (e) => {
 		try {
 			let deviceId = selectRef.current.value;
 
@@ -252,7 +271,7 @@ function Room() {
 				navigator.mediaDevices
 					.getUserMedia({
 						video: { deviceId: { exact: deviceId } },
-						audio: toggleDevices.mic,
+						audio: toggleStream.mic,
 					})
 					.then((stream) => {
 						myVideo.current.srcObject = stream;
@@ -275,11 +294,7 @@ function Room() {
 	};
 
 	const cameras = (
-		<select
-			onChange={handleCameraChange}
-			ref={selectRef}
-			value={videoDevices[0]?.deviceId}
-		>
+		<select onChange={handleCameraChange} ref={selectRef}>
 			{videoDevices.map((device) => (
 				<option key={device.deviceId} value={device.deviceId}>
 					{device.label}
@@ -290,35 +305,43 @@ function Room() {
 
 	const toggleCamera = () => {
 		try {
-			if (toggleDevices.camera) {
-				const videoTrack = myStream.getVideoTracks()[0];
-				videoTrackRef.current = videoTrack;
+			if (toggleStream.screenShare) {
+				const currentVideoTrack = myStream.getVideoTracks()[0];
+				currentVideoTrack.stop();
 
-				videoTrack.stop();
-				setToggleDevices((prev) => ({ ...prev, camera: false }));
-				return;
+				navigator.mediaDevices
+					.getUserMedia({
+						video: { deviceId: { exact: selectRef.current.value } },
+						audio: toggleStream.mic,
+					})
+					.then((stream) => {
+						myVideo.current.srcObject = stream;
+						setMyStream(stream);
+						setToggleStream((prev) => ({
+							...prev,
+							camera: true,
+							screenShare: false,
+						}));
+
+						const newVideoTrack = stream.getVideoTracks()[0];
+
+						peerRef.current.forEach((peer) => {
+							peer.peer.replaceTrack(
+								videoTrackRef.current,
+								newVideoTrack,
+								initialStream.current
+							);
+						});
+					});
+			} else {
+				const prevVal = myStream.getVideoTracks()[0].enabled;
+
+				myStream.getVideoTracks()[0].enabled = !prevVal;
+
+				setToggleStream((prev) => ({ ...prev, camera: !prevVal }));
 			}
 
-			navigator.mediaDevices
-				.getUserMedia({
-					video: { deviceId: { exact: selectRef.current.value } },
-					audio: toggleDevices.mic,
-				})
-				.then((stream) => {
-					myVideo.current.srcObject = stream;
-					setMyStream(stream);
-					setToggleDevices((prev) => ({ ...prev, camera: true }));
-
-					const newVideoTrack = stream.getVideoTracks()[0];
-
-					peerRef.current.forEach((peer) => {
-						peer.peer.replaceTrack(
-							videoTrackRef.current,
-							newVideoTrack,
-							initialStream.current
-						);
-					});
-				});
+			console.log(myStream.getVideoTracks()[0]);
 		} catch (err) {
 			console.log(err);
 		}
@@ -326,35 +349,11 @@ function Room() {
 
 	const toggleMic = () => {
 		try {
-			if (toggleDevices.mic) {
-				const audioTrack = myStream.getAudioTracks()[0];
-				audioTrackRef.current = audioTrack;
+			const prevVal = myStream.getAudioTracks()[0].enabled;
 
-				audioTrack.stop();
-				setToggleDevices((prev) => ({ ...prev, mic: false }));
-				return;
-			}
+			myStream.getAudioTracks()[0].enabled = !prevVal;
 
-			navigator.mediaDevices
-				.getUserMedia({
-					video: { deviceId: { exact: selectRef.current.value } },
-					audio: toggleDevices.mic,
-				})
-				.then((stream) => {
-					myVideo.current.srcObject = stream;
-					setMyStream(stream);
-					setToggleDevices((prev) => ({ ...prev, mic: true }));
-
-					const newAudioTrack = stream.getAudioTracks()[0];
-
-					peerRef.current.forEach((peer) => {
-						peer.peer.replaceTrack(
-							audioTrackRef.current,
-							newAudioTrack,
-							initialStream.current
-						);
-					});
-				});
+			setToggleStream((prev) => ({ ...prev, mic: !prevVal }));
 		} catch (err) {
 			console.log(err);
 		}
@@ -375,11 +374,22 @@ function Room() {
 				{peer && remoteUsers}
 			</div>
 
-			<div>
+			<div className="menu">
 				{cameras}
-				<button onClick={toggleCamera}>Camera</button>
-				<button onClick={toggleMic}>Mic</button>
-				<button onClick={handleScreenShare}>Screen Share</button>
+				<button onClick={() => toggleCamera()}>
+					{toggleStream.camera ? (
+						<Camera strokeWidth={2} />
+					) : (
+						<CameraOff strokeWidth={2} />
+					)}
+				</button>
+				<button onClick={() => toggleMic()}>
+					{toggleStream.mic ? (
+						<Microphone strokeWidth={2} />
+					) : (
+						<MicrophoneOff strokeWidth={2} />
+					)}
+				</button>
 			</div>
 		</>
 	);

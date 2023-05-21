@@ -1,0 +1,12 @@
+@use "../abstracts" as ab;
+
+.menu {
+	position: fixed;
+
+	bottom: 0;
+	left: 0;
+	right: 0;
+
+	background-color: ab.$background-secondary;
+	padding-block: 1.4em;
+}
