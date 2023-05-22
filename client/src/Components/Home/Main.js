@@ -4,23 +4,26 @@ import { nanoid } from "nanoid";
 import { useNavigate } from "react-router-dom";
 
 function Main() {
-	let navigate = useNavigate();
+	let navigate = useNavigate(); // to programitically navigate between pages
 	const [userInfo, setUserInfo] = useState({
 		name: "",
 		roomId: "",
-	});
-	const [isDisabled, setIsDisabled] = useState(true);
+	}); // user details state
+	const [isDisabled, setIsDisabled] = useState(true); // sate for join / create room button
 
 	useEffect(() => {
+		// button state management
 		if (userInfo.name.length < 1 || userInfo.roomId.length < 1)
 			setIsDisabled(true);
 		else setIsDisabled(false);
 	}, [userInfo]);
 
+	// handle user input
 	const handleInput = (key, value) => {
 		setUserInfo((prev) => ({ ...prev, [key]: value }));
 	};
 
+	// handle room creation and joining
 	const handleRoomJoin = () => {
 		navigate("/join", {
 			state: {

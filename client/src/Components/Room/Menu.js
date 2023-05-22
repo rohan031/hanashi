@@ -5,7 +5,6 @@ import {
 	Microphone,
 	MicrophoneOff,
 	PhoneOff,
-	DotsVertical as Dots,
 	Message2 as Message,
 	Copy,
 } from "tabler-icons-react";
@@ -19,16 +18,19 @@ function Menu({
 	cameras,
 	handleCameraChange,
 	roomId,
+	setOpen,
 }) {
-	const toaster = useToaster();
-	const navigate = useNavigate();
+	const toaster = useToaster(); // to manage notifications
+	const navigate = useNavigate(); // to programatically navigate
 
+	// success message for copying room-id to clipboard
 	const message = (
 		<Notification closable type="success" header="success">
 			Successfully copied room-id.
 		</Notification>
 	);
 
+	// error message
 	const error = (
 		<Notification closable type="error" header="error">
 			Can't copy room-id right now.
@@ -36,6 +38,7 @@ function Menu({
 		</Notification>
 	);
 
+	// copying room-id to clipboard
 	const copy = () => {
 		navigator.clipboard
 			.writeText(roomId)
@@ -55,8 +58,14 @@ function Menu({
 			});
 	};
 
+	// handling room leave
 	const handleLeave = () => {
 		navigate("/");
+	};
+
+	// handle chat open and close
+	const handleChat = () => {
+		setOpen((prev) => !prev);
 	};
 
 	return (
@@ -76,7 +85,7 @@ function Menu({
 				)}
 			</button>
 
-			<button>
+			<button onClick={handleChat}>
 				<Message strokeWidth={2} />
 			</button>
 

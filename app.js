@@ -71,6 +71,12 @@ io.on("connection", (socket) => {
 		});
 	});
 
+	socket.on("send-message", (payload) => {
+		// receiving message from the client
+		let userRoom = socketToRoom[socket.id];
+		socket.broadcast.to(userRoom).emit("new-message", payload);
+	});
+
 	socket.on("disconnect", () => {
 		// remove the disconnected user from the room and broadcast other users to remove them as well from client side
 		console.log("disconnet");

@@ -1,9 +1,10 @@
 import React, { useRef, useEffect } from "react";
 
 function Video({ peer, name }) {
-	const videoRef = useRef();
+	const videoRef = useRef(); // ref to video element
 
 	useEffect(() => {
+		// on receiving remote stream display it to the user
 		peer.on("stream", (stream) => {
 			videoRef.current.srcObject = stream;
 		});
