@@ -1,11 +1,11 @@
 @use "../abstracts" as ab;
 
 .menu {
-	padding-block: 0 1.4em;
+	padding-block: 0 1em;
 	margin-top: auto;
+	background-color: transparent;
 
 	&-container {
-		background-color: ab.$background-secondary;
 		width: min(95%, 25rem);
 		margin-inline: auto;
 		padding-block: 0.5em;

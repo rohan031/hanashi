@@ -7,6 +7,20 @@ function getWindowDimensions() {
 	return width;
 }
 
+const colors = [
+	"#8400ff",
+	"#ff005a",
+	"#b762c0",
+	"#f1bbd5",
+	"#ecc489",
+	"#ff3d3d",
+	"#54b435",
+	"#FF1E56",
+	"#E94560",
+];
+
+let idToColor = {};
+
 function Chat({ open, setOpen, sendMessage, messages }) {
 	const [width, setWidth] = useState(getWindowDimensions());
 	const chatRef = useRef();
@@ -53,13 +67,23 @@ function Chat({ open, setOpen, sendMessage, messages }) {
 	};
 
 	const messageList = messages.map((msgInfo, index) => {
+		if (!idToColor[msgInfo.id]) {
+			let index = Math.floor(Math.random() * 19);
+			if (index > 8) index %= 9;
+
+			idToColor = { ...idToColor, [msgInfo.id]: colors[index] };
+		}
 		return (
 			// add workbreak to message
 			<div
 				key={index}
 				className={`message ${msgInfo.isPeer ? " " : "my"}`}
 			>
-				<h4>{msgInfo.from}</h4>
+				{msgInfo.isPeer && (
+					<h4 style={{ color: `${idToColor[msgInfo.id]}` }}>
+						{msgInfo.from}
+					</h4>
+				)}
 				<p>{msgInfo.message}</p>
 			</div>
 		);

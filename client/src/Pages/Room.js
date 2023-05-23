@@ -167,10 +167,11 @@ function Room() {
 	}, []);
 
 	// handle receive message
-	const reciveMessage = ({ from, message }) => {
+	const reciveMessage = ({ from, message, id }) => {
 		const messageObj = {
 			from,
 			message,
+			id,
 			isPeer: true,
 		};
 
@@ -182,6 +183,7 @@ function Room() {
 		const messageObj = {
 			from: userInfo.name,
 			message,
+			id: socketRef.current.id,
 		};
 
 		socketRef.current.emit("send-message", messageObj); // send new message to server
@@ -337,8 +339,11 @@ function Room() {
 
 	return (
 		<div className="room">
-			<div className="room-video">
-				<video ref={myVideo} autoPlay muted></video>
+			<div className="stream">
+				<div className="stream-item">
+					<video ref={myVideo} autoPlay muted></video>
+					<p>{userInfo.name}</p>
+				</div>
 
 				{peer && remoteUsers}
 			</div>

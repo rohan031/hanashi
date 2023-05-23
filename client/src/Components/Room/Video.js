@@ -17,9 +17,9 @@ function Video({ peer, name }) {
 	});
 
 	return (
-		<div>
+		<div className="stream-item">
 			<video ref={videoRef} autoPlay></video>
-			{name}
+			<p>{name}</p>
 		</div>
 	);
 }

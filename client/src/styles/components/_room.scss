@@ -6,11 +6,52 @@
 
 	display: flex;
 	flex-direction: column;
-	// justify-content: space-between;
-	gap: 0.5em;
+	// gap: 0.5em;
 
-	&-video {
+	.stream {
 		overflow-y: scroll;
-		outline: 2px solid coral;
+		// outline: 2px solid coral;
+		width: min(90%, 120rem);
+		margin-inline: auto;
+		margin-block: 1em;
+
+		display: grid;
+		gap: 1em;
+		grid-template-columns: repeat(auto-fill, minmax(25vw, 1fr));
+
+		.stream-item {
+			position: relative;
+			margin: 1em;
+
+			box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+			border-radius: 10px;
+			border: 1px solid rgba(255, 255, 255, 0.18);
+
+			video {
+				border-radius: 0.6em;
+				width: 100%;
+				max-height: 80vh;
+				transform: rotateY(180deg);
+				object-fit: cover;
+			}
+
+			p {
+				position: absolute;
+				bottom: 1em;
+				left: 1em;
+
+				background-color: #ffa07a;
+				padding-inline: 0.5em;
+				border-radius: 0.5em;
+				font-weight: 600;
+
+				background: rgba(255, 0, 90, 0.55);
+				box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+				backdrop-filter: blur(5.5px);
+				-webkit-backdrop-filter: blur(5.5px);
+				border-radius: 10px;
+				border: 1px solid rgba(255, 255, 255, 0.18);
+			}
+		}
 	}
 }
