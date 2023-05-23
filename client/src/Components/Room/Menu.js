@@ -61,6 +61,7 @@ function Menu({
 	// handling room leave
 	const handleLeave = () => {
 		navigate("/");
+		navigate(0);
 	};
 
 	// handle chat open and close

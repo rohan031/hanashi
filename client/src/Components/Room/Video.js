@@ -6,9 +6,15 @@ function Video({ peer, name }) {
 	useEffect(() => {
 		// on receiving remote stream display it to the user
 		peer.on("stream", (stream) => {
+			console.log("got-remote-stream");
 			videoRef.current.srcObject = stream;
 		});
-	}, []);
+	});
+
+	peer.on("stream", (stream) => {
+		console.log("got-remote-stream-out");
+		videoRef.current.srcObject = stream;
+	});
 
 	return (
 		<div>

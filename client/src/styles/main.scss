@@ -26,3 +26,8 @@ video {
 	outline: 2px solid lightgreen;
 	max-width: 100vw;
 }
+
+[contentEditable="true"]:empty:not(:focus)::before {
+	content: attr(data-ph);
+	color: lightgrey;
+}
