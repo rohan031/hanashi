@@ -1,0 +1,16 @@
+@use "../abstracts" as ab;
+
+.room {
+	outline: 2px solid coral;
+	height: 100dvh;
+
+	display: flex;
+	flex-direction: column;
+	// justify-content: space-between;
+	gap: 0.5em;
+
+	&-video {
+		overflow-y: scroll;
+		outline: 2px solid coral;
+	}
+}

@@ -336,8 +336,8 @@ function Room() {
 	});
 
 	return (
-		<>
-			<div>
+		<div className="room">
+			<div className="room-video">
 				<video ref={myVideo} autoPlay muted></video>
 
 				{peer && remoteUsers}
@@ -358,7 +358,7 @@ function Room() {
 				roomId={userInfo.roomId}
 				setOpen={setOpen}
 			/>
-		</>
+		</div>
 	);
 }
 

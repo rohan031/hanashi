@@ -71,43 +71,43 @@ function Menu({
 
 	return (
 		<div className="menu">
-			<button onClick={() => toggleCamera()}>
-				{toggleStream.camera ? (
-					<Camera strokeWidth={2} />
-				) : (
-					<CameraOff strokeWidth={2} />
-				)}
-			</button>
-			<button onClick={() => toggleMic()}>
-				{toggleStream.mic ? (
-					<Microphone strokeWidth={2} />
-				) : (
-					<MicrophoneOff strokeWidth={2} />
-				)}
-			</button>
-
-			<button onClick={handleChat}>
-				<Message strokeWidth={2} />
-			</button>
-
-			<Dropdown title={"More"} placement="topEnd">
+			<div className="menu-container">
+				<button onClick={() => toggleCamera()}>
+					{toggleStream.camera ? (
+						<Camera strokeWidth={2} size={28} />
+					) : (
+						<CameraOff strokeWidth={2} size={28} />
+					)}
+				</button>
+				<button onClick={() => toggleMic()}>
+					{toggleStream.mic ? (
+						<Microphone strokeWidth={2} size={28} />
+					) : (
+						<MicrophoneOff strokeWidth={2} size={28} />
+					)}
+				</button>
+				<button onClick={handleChat}>
+					<Message strokeWidth={2} size={28} />
+				</button>
 				<button onClick={handleLeave}>
-					<PhoneOff strokeWidth={2} /> Leave
+					<PhoneOff strokeWidth={2} size={28} />
+					End
 				</button>
+				<Dropdown title={"More"} placement="topEnd">
+					<button onClick={copy}>
+						<Copy strokeWidth={2} size={28} /> Copy room-id
+					</button>
 
-				<button onClick={copy}>
-					<Copy strokeWidth={2} /> Copy room-id
-				</button>
-
-				<SelectPicker
-					data={cameras}
-					searchable={false}
-					onChange={handleCameraChange}
-					style={{ width: 224 }}
-					cleanable={false}
-					placement="topStart"
-				/>
-			</Dropdown>
+					<SelectPicker
+						data={cameras}
+						searchable={false}
+						onChange={handleCameraChange}
+						style={{ width: 224 }}
+						cleanable={false}
+						placement="topStart"
+					/>
+				</Dropdown>
+			</div>
 		</div>
 	);
 }

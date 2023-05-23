@@ -12,7 +12,6 @@
 		height: 100%;
 		width: 100%;
 
-		// background-color: #423f3e2d;
 		display: grid;
 		gap: 0.5em;
 		grid-template-rows: 10fr 0.5fr;
@@ -24,13 +23,13 @@
 			padding-inline: 0.2em;
 			padding-block: 0.5em;
 
-			display: grid;
-			gap: 0.8em;
+			// display: grid;
+			// gap: 0.8em;
 
 			.message {
-				// outline: 2px solid lightblue;
 				max-width: 75%;
 				padding: 0.4em 0.8em;
+				margin-bottom: 0.6em;
 
 				border-radius: 1em;
 

@@ -1,24 +1,33 @@
 @use "../abstracts" as ab;
 
 .menu {
-	position: fixed;
+	padding-block: 0 1.4em;
+	margin-top: auto;
 
-	bottom: 0;
-	left: 0;
-	right: 0;
+	&-container {
+		background-color: ab.$background-secondary;
+		width: min(95%, 25rem);
+		margin-inline: auto;
+		padding-block: 0.5em;
 
-	// background-color: ab.$background-secondary;
-	padding-block: 1.4em;
+		background: rgba(241, 187, 213, 0.2);
+		box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+		backdrop-filter: blur(4px);
+		-webkit-backdrop-filter: blur(4px);
+		border-radius: 10px;
+		border: 1px solid rgba(255, 255, 255, 0.18);
 
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 1em;
+		display: flex;
+		align-items: center;
+		justify-content: space-around;
+		gap: 0.5em;
+	}
 
 	.rs-dropdown {
 		ul {
 			gap: 1em;
 			padding-inline: 0.5em;
+			padding-block: 1em;
 			background-color: ab.$background-secondary;
 		}
 		button {
@@ -28,19 +37,24 @@
 	}
 
 	button {
-		background-color: #ff0059a6;
+		background-color: transparent;
+		color: ab.$accent-pink;
+		font-weight: 600;
+
 		display: flex;
 		align-items: center;
-		padding-inline: 1em;
+		gap: 0.3em;
+
+		padding-inline: 0.5em;
 		padding-block: 0.5em;
 		border-radius: 0.6em;
 
-		gap: 1em;
-		font-weight: 600;
+		transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 
 		&:hover,
 		&:focus {
 			background-color: lighten(#ff0059a6, 15);
+			color: ab.$text-primary;
 		}
 	}
 }
