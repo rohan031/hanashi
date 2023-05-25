@@ -7,6 +7,8 @@ import {
 	PhoneOff,
 	Message2 as Message,
 	Copy,
+	ScreenShare,
+	ScreenShareOff,
 } from "tabler-icons-react";
 import { Dropdown, SelectPicker, Notification, useToaster } from "rsuite";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +21,7 @@ function Menu({
 	handleCameraChange,
 	roomId,
 	setOpen,
+	handleScreenShare,
 }) {
 	const toaster = useToaster(); // to manage notifications
 	const navigate = useNavigate(); // to programatically navigate
@@ -94,6 +97,20 @@ function Menu({
 					End
 				</button>
 				<Dropdown title={"More"} placement="topEnd">
+					<button onClick={() => handleScreenShare()}>
+						{!toggleStream.screenShare ? (
+							<>
+								<ScreenShare strokeWidth={2} size={28} />
+								Share screen
+							</>
+						) : (
+							<>
+								<ScreenShareOff strokeWidth={2} size={28} />
+								Stop screen share
+							</>
+						)}
+					</button>
+
 					<button onClick={copy}>
 						<Copy strokeWidth={2} size={28} /> Copy room-id
 					</button>

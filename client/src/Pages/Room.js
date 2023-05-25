@@ -31,8 +31,10 @@ function Room() {
 	const [toggleStream, setToggleStream] = useState({
 		mic: true,
 		camera: true,
+		screenShare: false,
 	}); // state management for toggling media devices
 	const [messages, setMessages] = useState([]); // list of all chat messages
+	const [screenShareStream, setScreenShareStream] = useState(); // screen share stream state
 
 	// room full notification
 	const roomFullMessage = (
@@ -261,24 +263,122 @@ function Room() {
 		}
 	};
 
+	const handleScreenShare = () => {
+		if (!toggleStream.screenShare) {
+			const currentVideoTrack = myStream.getVideoTracks()[0];
+			currentVideoTrack.stop();
+
+			navigator.mediaDevices
+				.getDisplayMedia({
+					video: true,
+					audio: true,
+				})
+				.then((stream) => {
+					setScreenShareStream(stream);
+					myVideo.current.srcObject = stream;
+
+					setToggleStream((prev) => ({
+						...prev,
+						camera: false,
+						screenShare: true,
+					}));
+
+					const newVideoTrack = stream.getVideoTracks()[0];
+
+					peerRef.current.forEach((peer) => {
+						// replacing video tracks for all the connected peers
+						peer.peer.replaceTrack(
+							currentVideoTrack,
+							newVideoTrack,
+							initialStream.current
+						);
+					});
+				});
+		} else {
+			toggleCamera();
+		}
+	};
+
 	// switching video device
 	const handleCameraChange = (deviceId) => {
 		try {
-			if (myStream.active) {
-				const currentVideoTrack = myStream.getVideoTracks()[0];
+			if (!toggleStream.screenShare) {
+				if (myStream.active) {
+					const currentVideoTrack = myStream.getVideoTracks()[0];
+					currentVideoTrack.stop();
+
+					navigator.mediaDevices
+						.getUserMedia({
+							video: { deviceId: { exact: deviceId } },
+							audio: true,
+						})
+						.then((stream) => {
+							myVideo.current.srcObject = stream;
+							setMyStream(stream);
+
+							stream.getAudioTracks()[0].enabled =
+								toggleStream.mic;
+
+							setToggleStream((prev) => ({
+								...prev,
+								camera: true,
+							}));
+
+							const newVideoTrack = stream.getVideoTracks()[0];
+
+							peerRef.current.forEach((peer) => {
+								// replacing video tracks for all the connected peers
+								peer.peer.replaceTrack(
+									currentVideoTrack,
+									newVideoTrack,
+									initialStream.current
+								);
+							});
+						});
+				}
+			} else {
+				toggleCamera(deviceId);
+			}
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	// list of cameras to display to the user
+	const cameras = videoDevices.map((device) => ({
+		label: device.label,
+		value: device.deviceId,
+	}));
+
+	// toggle camera on and off
+	const toggleCamera = (deviceId = false) => {
+		try {
+			if (!toggleStream.screenShare) {
+				const prevVal = myStream.getVideoTracks()[0].enabled;
+				myStream.getVideoTracks()[0].enabled = !prevVal;
+
+				setToggleStream((prev) => ({ ...prev, camera: !prevVal }));
+			} else {
+				const currentVideoTrack = screenShareStream.getVideoTracks()[0];
 				currentVideoTrack.stop();
 
 				navigator.mediaDevices
 					.getUserMedia({
-						video: { deviceId: { exact: deviceId } },
-						audio: toggleStream.mic,
+						video: deviceId
+							? { deviceId: { exact: deviceId } }
+							: true,
+						audio: true,
 					})
 					.then((stream) => {
 						myVideo.current.srcObject = stream;
 						setMyStream(stream);
+
+						stream.getAudioTracks()[0].enabled = toggleStream.mic;
+
 						setToggleStream((prev) => ({
 							...prev,
 							camera: true,
+							screenShare: false,
 						}));
 
 						const newVideoTrack = stream.getVideoTracks()[0];
@@ -293,24 +393,6 @@ function Room() {
 						});
 					});
 			}
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
-	// list of cameras to display to the user
-	const cameras = videoDevices.map((device) => ({
-		label: device.label,
-		value: device.deviceId,
-	}));
-
-	// toggle camera on and off
-	const toggleCamera = () => {
-		try {
-			const prevVal = myStream.getVideoTracks()[0].enabled;
-			myStream.getVideoTracks()[0].enabled = !prevVal;
-
-			setToggleStream((prev) => ({ ...prev, camera: !prevVal }));
 		} catch (err) {
 			console.log(err);
 		}
@@ -362,6 +444,7 @@ function Room() {
 				handleCameraChange={handleCameraChange}
 				roomId={userInfo.roomId}
 				setOpen={setOpen}
+				handleScreenShare={handleScreenShare}
 			/>
 		</div>
 	);
