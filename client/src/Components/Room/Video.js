@@ -16,9 +16,19 @@ function Video({ peer, name }) {
 		videoRef.current.srcObject = stream;
 	});
 
+	// handle on click fullscreen
+	const handleFullScreen = () => {
+		if (videoRef.current.requestFullscreen) {
+			videoRef.current.requestFullscreen();
+		} else if (videoRef.current.webkitRequestFullscreen) {
+			/* Safari */
+			videoRef.current.webkitRequestFullscreen();
+		}
+	};
+
 	return (
 		<div className="stream-item">
-			<video ref={videoRef} autoPlay></video>
+			<video ref={videoRef} autoPlay onClick={handleFullScreen}></video>
 			<p>{name}</p>
 		</div>
 	);

@@ -48,6 +48,7 @@ function Room() {
 		if (!location.state) navigate("/");
 		// if room-id and user details not there redirect to home
 		else {
+			localStorage.setItem("refresh", true);
 			socketRef.current = io("/"); // socket connection
 
 			navigator.mediaDevices
@@ -411,6 +412,16 @@ function Room() {
 		}
 	};
 
+	// handle on click fullscreen
+	const handleFullScreen = () => {
+		if (myVideo.current.requestFullscreen) {
+			myVideo.current.requestFullscreen();
+		} else if (myVideo.current.webkitRequestFullscreen) {
+			/* Safari */
+			myVideo.current.webkitRequestFullscreen();
+		}
+	};
+
 	// remote users list
 	const remoteUsers = [];
 	peer.forEach((peer) => {
@@ -423,7 +434,12 @@ function Room() {
 		<div className="room">
 			<div className="stream">
 				<div className="stream-item">
-					<video ref={myVideo} autoPlay muted></video>
+					<video
+						onClick={handleFullScreen}
+						ref={myVideo}
+						autoPlay
+						muted
+					></video>
 					<p>{userInfo.name}</p>
 				</div>
 

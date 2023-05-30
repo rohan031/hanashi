@@ -18,6 +18,15 @@ function Main() {
 		else setIsDisabled(false);
 	}, [userInfo]);
 
+	useEffect(() => {
+		let refresh = localStorage.getItem("refresh");
+
+		if (refresh && refresh !== "false") {
+			localStorage.setItem("refresh", false);
+			navigate(0);
+		}
+	}, []);
+
 	// handle user input
 	const handleInput = (key, value) => {
 		setUserInfo((prev) => ({ ...prev, [key]: value }));

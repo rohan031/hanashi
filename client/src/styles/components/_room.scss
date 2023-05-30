@@ -1,38 +1,36 @@
 @use "../abstracts" as ab;
 
 .room {
-	outline: 2px solid coral;
-	height: 100dvh;
-
-	display: flex;
-	flex-direction: column;
-	// gap: 0.5em;
+	min-height: 100dvh;
 
 	.stream {
-		overflow-y: scroll;
-		// outline: 2px solid coral;
-		width: min(90%, 120rem);
+		width: 95%;
 		margin-inline: auto;
 		margin-block: 1em;
 
 		display: grid;
 		gap: 1em;
-		grid-template-columns: repeat(auto-fill, minmax(25vw, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(min(30rem, 100%), 1fr));
 
 		.stream-item {
 			position: relative;
 			margin: 1em;
+			// max-height: 35rem;
 
 			box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 			border-radius: 10px;
 			border: 1px solid rgba(255, 255, 255, 0.18);
+			background-color: ab.$background-secondary;
+
+			display: flex;
+			align-items: center;
+			justify-content: center;
 
 			video {
 				border-radius: 0.6em;
 				width: 100%;
-				max-height: 80vh;
-				// transform: rotateY(180deg);
-				object-fit: cover;
+				max-height: 90vh;
+				object-fit: contain;
 			}
 
 			p {

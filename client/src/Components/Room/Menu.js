@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
 	Camera,
 	CameraOff,
@@ -23,8 +23,18 @@ function Menu({
 	setOpen,
 	handleScreenShare,
 }) {
+	const [isMobile, setIsMobile] = useState(false);
 	const toaster = useToaster(); // to manage notifications
 	const navigate = useNavigate(); // to programatically navigate
+
+	useEffect(() => {
+		if (
+			/Android|webOS|iPhone|iPad|iPod|Opera Mini/i.test(
+				navigator.userAgent
+			)
+		)
+			setIsMobile(true);
+	}, []);
 
 	// success message for copying room-id to clipboard
 	const message = (
@@ -97,19 +107,21 @@ function Menu({
 					End
 				</button>
 				<Dropdown title={"More"} placement="topEnd">
-					<button onClick={() => handleScreenShare()}>
-						{!toggleStream.screenShare ? (
-							<>
-								<ScreenShare strokeWidth={2} size={28} />
-								Share screen
-							</>
-						) : (
-							<>
-								<ScreenShareOff strokeWidth={2} size={28} />
-								Stop screen share
-							</>
-						)}
-					</button>
+					{!isMobile && (
+						<button onClick={() => handleScreenShare()}>
+							{!toggleStream.screenShare ? (
+								<>
+									<ScreenShare strokeWidth={2} size={28} />
+									Share screen
+								</>
+							) : (
+								<>
+									<ScreenShareOff strokeWidth={2} size={28} />
+									Stop screen share
+								</>
+							)}
+						</button>
+					)}
 
 					<button onClick={copy}>
 						<Copy strokeWidth={2} size={28} /> Copy room-id
