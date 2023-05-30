@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const path = require("path");
 
 const PORT = process.env.PORT || 4000;
 const server = require("http").createServer(app);
@@ -12,6 +13,7 @@ const io = require("socket.io")(server, {
 
 const cors = require("cors");
 app.use(cors());
+app.use(express.static("client/build"));
 
 require("dotenv").config();
 
@@ -92,11 +94,8 @@ io.on("connection", (socket) => {
 	});
 });
 
-app.get("/server", (req, res) => {
-	res.status(200).json({
-		success: "true",
-		msg: "Server is working fine",
-	});
+app.get("/", (req, res) => {
+	res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
 });
 
 server.listen(PORT, (err) => {

@@ -48,7 +48,7 @@ function Room() {
 		if (!location.state) navigate("/");
 		// if room-id and user details not there redirect to home
 		else {
-			localStorage.setItem("refresh", true);
+			sessionStorage.setItem("refresh", true);
 			socketRef.current = io("/"); // socket connection
 
 			navigator.mediaDevices
@@ -277,6 +277,45 @@ function Room() {
 				.then((stream) => {
 					setScreenShareStream(stream);
 					myVideo.current.srcObject = stream;
+
+					// somebody clicked on "Stop sharing"
+					stream.getVideoTracks()[0].onended = function () {
+						// toggleCamera();
+						console.log("closed");
+
+						const currentVideoTrack = stream.getVideoTracks()[0];
+
+						navigator.mediaDevices
+							.getUserMedia({
+								video: true,
+								audio: true,
+							})
+							.then((stream) => {
+								myVideo.current.srcObject = stream;
+								setMyStream(stream);
+
+								stream.getAudioTracks()[0].enabled =
+									toggleStream.mic;
+
+								setToggleStream((prev) => ({
+									...prev,
+									camera: true,
+									screenShare: false,
+								}));
+
+								const newVideoTrack =
+									stream.getVideoTracks()[0];
+
+								peerRef.current.forEach((peer) => {
+									// replacing video tracks for all the connected peers
+									peer.peer.replaceTrack(
+										currentVideoTrack,
+										newVideoTrack,
+										initialStream.current
+									);
+								});
+							});
+					};
 
 					setToggleStream((prev) => ({
 						...prev,

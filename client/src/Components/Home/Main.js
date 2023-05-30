@@ -19,11 +19,11 @@ function Main() {
 	}, [userInfo]);
 
 	useEffect(() => {
-		let refresh = localStorage.getItem("refresh");
+		let refresh = sessionStorage.getItem("refresh");
 
 		if (refresh && refresh !== "false") {
-			localStorage.setItem("refresh", false);
-			navigate(0);
+			sessionStorage.setItem("refresh", false);
+			window.location.reload();
 		}
 	}, []);
 
