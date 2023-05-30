@@ -1,0 +1,134 @@
+@use "../abstracts" as ab;
+
+.main {
+	width: min(90%, 85rem);
+	margin-inline: auto;
+	margin-block: 5em;
+
+	display: flex;
+	flex-direction: column;
+	gap: 3em;
+
+	@include ab.screen-50 {
+		flex-direction: row-reverse;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	img {
+		max-width: 25rem;
+		margin-inline: auto;
+
+		@include ab.screen-50 {
+			margin-inline: 0;
+			max-width: 100%;
+			width: clamp(20rem, 30vw, 30rem);
+		}
+	}
+
+	.user-details {
+		display: grid;
+		gap: 1.5em;
+
+		> div {
+			h2 {
+				font-size: clamp(2rem, 4.2vw, 2.8rem);
+				font-weight: 800;
+				line-height: 1.1em;
+			}
+
+			.user-details__input {
+				position: relative;
+
+				margin-block: 0.6em 2em;
+
+				input {
+					color: ab.$text-primary;
+					background-color: ab.$background-primary;
+
+					border: none;
+					border-bottom: 0.15em solid ab.$text-primary;
+					outline: none;
+
+					padding-left: 0.2em;
+					padding-block: 0.2em;
+
+					font-size: 1.1rem;
+					font-weight: 500;
+					width: min(100%, 20rem);
+
+					transition: border-color 0.2s ease-in-out;
+
+					&:focus,
+					&:valid {
+						border-bottom-color: ab.$accent-pink;
+
+						& + label {
+							translate: 10% -80%;
+							font-weight: 600;
+							font-size: 1.2rem;
+						}
+					}
+				}
+
+				label {
+					position: absolute;
+					font-weight: 500;
+					color: ab.$text-secondary;
+					left: 0;
+					translate: 10% 15%;
+
+					transition: translate 0.2s ease-in-out,
+						font-size 0.2s ease-in-out, font-weight 0.2s ease-in-out;
+				}
+
+				button {
+					border: none;
+					display: block;
+
+					background-color: transparent;
+					color: ab.$accent-light;
+
+					cursor: pointer;
+					text-decoration: underline;
+					margin-top: 0.5em;
+				}
+			}
+
+			> button {
+				font-size: 1.2rem;
+				font-weight: 600;
+				color: ab.$text-primary;
+				text-decoration: underline transparent;
+
+				background-color: ab.$accent;
+				border: none;
+				border-radius: 0.6em;
+
+				padding-inline: 1em;
+				padding-block: 0.4em;
+				cursor: pointer;
+
+				transition: text-decoration-color 0.2s ease-in-out,
+					background-color 0.2s ease-in-out;
+
+				&:focus,
+				&:hover {
+					text-decoration-color: ab.$text-primary;
+					background-color: lighten($color: ab.$accent, $amount: 10);
+				}
+
+				&:active {
+					background-color: darken(ab.$accent, 10);
+				}
+
+				&:disabled {
+					cursor: not-allowed;
+					text-decoration: none;
+					background-color: ab.$accent;
+					opacity: 0.4;
+				}
+			}
+		}
+	}
+}

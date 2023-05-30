@@ -1,0 +1,94 @@
+@use "../abstracts" as ab;
+
+.rs-drawer-content {
+	background-color: ab.$background-secondary;
+
+	.rs-drawer-body {
+		padding-inline: 0em;
+		padding-block: 1.4em 0;
+	}
+
+	.chats {
+		height: 100%;
+		width: 100%;
+
+		display: grid;
+		gap: 0.5em;
+		grid-template-rows: 10fr 0.5fr;
+
+		&-history {
+			overflow-y: scroll;
+
+			margin-inline: 1.2em;
+			padding-inline: 0.2em;
+			padding-block: 0.5em;
+
+			.message {
+				max-width: 75%;
+				padding: 0.4em 0.8em;
+				margin-bottom: 0.6em;
+
+				border-radius: 1em;
+
+				background-color: #423f3e2d;
+
+				&.my {
+					margin-left: auto;
+					background-color: ab.$accent-pink;
+
+					h4 {
+						color: ab.$text-primary;
+					}
+				}
+
+				h4 {
+					font-size: 0.8rem;
+					cursor: context-menu;
+					color: ab.$accent-lightpink;
+				}
+
+				p {
+					word-break: break-word;
+				}
+			}
+		}
+
+		&-type {
+			border-top: 2px solid ab.$accent-pink;
+			padding-block: 0.5em 1.4em;
+			padding-inline: 1.2em;
+
+			background-color: #423f3e2d;
+
+			form {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				gap: 0.5em;
+			}
+
+			textarea {
+				width: 100%;
+				padding-block: 0.3em;
+				resize: none;
+
+				font-size: 1.2rem;
+				font-weight: 500;
+				word-break: break-all;
+
+				border: none;
+				outline: none;
+
+				background-color: transparent;
+			}
+
+			button {
+				background-color: transparent;
+				color: ab.$accent-pink;
+
+				display: inline-flex;
+				cursor: pointer;
+			}
+		}
+	}
+}

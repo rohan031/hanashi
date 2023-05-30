@@ -1,0 +1,55 @@
+@use "../abstracts" as ab;
+
+.room {
+	min-height: 100dvh;
+
+	.stream {
+		width: 95%;
+		margin-inline: auto;
+		margin-block: 1em;
+
+		display: grid;
+		gap: 1em;
+		grid-template-columns: repeat(auto-fit, minmax(min(30rem, 100%), 1fr));
+
+		.stream-item {
+			position: relative;
+			margin: 1em;
+			// max-height: 35rem;
+
+			box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+			border-radius: 10px;
+			border: 1px solid rgba(255, 255, 255, 0.18);
+			background-color: ab.$background-secondary;
+
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			video {
+				border-radius: 0.6em;
+				width: 100%;
+				max-height: 90vh;
+				object-fit: contain;
+			}
+
+			p {
+				position: absolute;
+				bottom: 1em;
+				left: 1em;
+
+				background-color: #ffa07a;
+				padding-inline: 0.5em;
+				border-radius: 0.5em;
+				font-weight: 600;
+
+				background: rgba(255, 0, 90, 0.55);
+				box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+				backdrop-filter: blur(5.5px);
+				-webkit-backdrop-filter: blur(5.5px);
+				border-radius: 10px;
+				border: 1px solid rgba(255, 255, 255, 0.18);
+			}
+		}
+	}
+}
