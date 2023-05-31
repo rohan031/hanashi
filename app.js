@@ -93,7 +93,7 @@ io.on("connection", (socket) => {
 });
 
 app.get("/", (req, res) => {
-	res.json(200, {
+	res.status(200).json({
 		success: true,
 		message: "Server is working fine",
 	});
