@@ -13,7 +13,6 @@ const io = require("socket.io")(server, {
 
 const cors = require("cors");
 app.use(cors());
-app.use(express.static("client/build"));
 
 require("dotenv").config();
 
@@ -95,7 +94,10 @@ io.on("connection", (socket) => {
 });
 
 app.get("/", (req, res) => {
-	res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+	res.json(200, {
+		success: true,
+		message: "Server is working fine",
+	});
 });
 
 server.listen(PORT, (err) => {
