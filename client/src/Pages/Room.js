@@ -49,7 +49,7 @@ function Room() {
 		// if room-id and user details not there redirect to home
 		else {
 			sessionStorage.setItem("refresh", true);
-			socketRef.current = io("/"); // socket connection
+			socketRef.current = io("https://hanashi-server.onrender.com"); // socket connection
 
 			navigator.mediaDevices
 				.getUserMedia({
